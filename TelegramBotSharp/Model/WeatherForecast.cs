@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TelegramBotSharp
+namespace TelegramBotSharp.Model
 {
     public class WeatherForecast
     {

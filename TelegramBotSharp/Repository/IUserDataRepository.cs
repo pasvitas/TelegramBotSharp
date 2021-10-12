@@ -1,5 +1,5 @@
 ﻿using System;
-namespace TelegramBotSharp
+namespace TelegramBotSharp.Repository
 {
     public interface IUserDataRepository
     {

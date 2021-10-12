@@ -1,7 +1,7 @@
 ﻿using System;
 namespace TelegramBotSharp.Service
 {
-    public interface ISettingService
+    public interface IUserService
     {
     }
 }
