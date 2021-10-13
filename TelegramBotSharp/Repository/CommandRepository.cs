@@ -21,6 +21,13 @@ namespace TelegramBotSharp.Repository
             _botDatabaseContext.SaveChanges();
         }
 
+        public List<CommandEntity> FindBySourceNames(string sourceNames)
+        {
+            return _botDatabaseContext.CommandEntities
+                .Where(entity => entity.SourceNames.Contains(sourceNames))
+                .ToList();
+        }
+
         public List<CommandEntity> GetAllCommands()
         {
             return _botDatabaseContext.CommandEntities.ToList();

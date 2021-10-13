@@ -29,6 +29,12 @@ namespace TelegramBotSharp.Controllers
             return _commandsRepository.GetAllCommands();
         }
 
+        [HttpGet("find")]
+        public IEnumerable<CommandEntity> Get(string sourceName)
+        {
+            return _commandsRepository.FindBySourceNames(sourceName);
+        }
+
         // GET api/values/5
         [HttpGet("{id}")]
         public CommandEntity Get(int id)

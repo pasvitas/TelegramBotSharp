@@ -11,5 +11,6 @@ namespace TelegramBotSharp.Repository
         public List<CommandEntity> GetAllCommands();
         public void UpdateCommandEntity(CommandEntity commandEntity);
         public void DeleteCommandEntity(int id);
+        public List<CommandEntity> FindBySourceNames(string sourceNames);
     }
 }
