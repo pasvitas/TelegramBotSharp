@@ -28,6 +28,14 @@ namespace TelegramBotSharp.Repository
                 .ToList();
         }
 
+        public List<CommandEntity> FindByTrigger(string trigger)
+        {
+            return _botDatabaseContext.CommandEntities
+                .Where(entity => entity.CommandName.StartsWith(trigger))
+                .ToList();
+        }
+
+
         public List<CommandEntity> GetAllCommands()
         {
             return _botDatabaseContext.CommandEntities.ToList();
@@ -40,9 +48,10 @@ namespace TelegramBotSharp.Repository
 
         public int SaveCommand(CommandEntity commandEntity)
         {
+            commandEntity.CommandId = null;
             _botDatabaseContext.Add(commandEntity);
             _botDatabaseContext.SaveChanges();
-            return commandEntity.CommandId;
+            return commandEntity.CommandId.Value;
         }
 
         public void UpdateCommandEntity(CommandEntity commandEntity)

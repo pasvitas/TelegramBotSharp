@@ -9,7 +9,7 @@ namespace TelegramBotSharp.Repository.Entity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CommandId { get; set; }
+        public int? CommandId { get; set; }
         public string CommandName { get; set; }
         public string SourceNames { get; set; }
         public Boolean IsScript { get; set; }

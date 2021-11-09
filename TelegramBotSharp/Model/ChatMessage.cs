@@ -1,10 +1,15 @@
 ﻿using System;
-namespace TelegramBotSharp.Model
+namespace TelegramBot.Model
 {
     public struct ChatMessage
     {
-        private string InputName { get; set; }
-        private string UserId { get; set; }
-        private string MessageText { get; set; }
+        public ChatMessage(long ChatId, String Message)
+        {
+            this.ChatId = ChatId;
+            this.Message = Message;
+        }
+
+        public long ChatId { get; set; }
+        public String Message { get; set; }
     }
 }

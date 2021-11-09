@@ -14,12 +14,16 @@
     <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
     <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL.Design" />
+    <None Remove="Telegram.Bot" />
+    <None Remove="Telegram.Bot.Extensions.Polling" />
+    <None Remove="Bot\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
     <Folder Include="Repository\" />
     <Folder Include="Service\" />
     <Folder Include="Repository\Entity\" />
+    <Folder Include="Bot\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
@@ -30,5 +34,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.10" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
+    <PackageReference Include="Telegram.Bot" Version="16.0.2" />
+    <PackageReference Include="Telegram.Bot.Extensions.Polling" Version="0.2.0" />
   </ItemGroup>
 </Project>
