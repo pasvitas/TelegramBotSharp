@@ -7,30 +7,31 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using TelegramBotSharp;
-using TelegramBotSharp.TelegramBot;
-using TelegramBotSharp.Service;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using TelegramBotSharp.Repository;
+using Confluent.Kafka;
+using TelegramBot.Model;
+using Newtonsoft.Json;
 
 namespace TelegramBot.Bot
 {
-    public class TelegramBotBot : IBot, IHostedService
+    public class TelegramBotBot : IHostedService
     {
-
-        private IChatService _chatService;
-
-        private readonly IServiceScopeFactory _services;
 
         private readonly ILogger<TelegramBotBot> _logger;
 
+        private readonly IProducer<Null, String> _producer;
+
         private readonly TelegramBotClient _botClient = new TelegramBotClient("2099109615:AAFeKA2uca2N96VOY7t8wh7uHUGaQ6q5b_E");
 
-        public TelegramBotBot(IServiceScopeFactory services, ILogger<TelegramBotBot> logger)
+        public TelegramBotBot(ILogger<TelegramBotBot> logger)
         {
             this._logger = logger;
-            this._services = services;
+            var producerConfig = new ProducerConfig
+            {
+                BootstrapServers = "localhost:9092",
+                ClientId = "bot.processor",
+            };
+            _producer = new ProducerBuilder<Null, string>(producerConfig).Build();
         }
 
         public async Task SendMessageToChat(long chatId, String text)
@@ -49,18 +50,31 @@ namespace TelegramBot.Bot
                 new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync),
                 cts.Token);
 
-            var scope = _services.CreateScope();
-            
-            var dbContext = scope.ServiceProvider.GetService<BotDatabaseContext>();
-            var repository = new CommandRepository(dbContext);
-            var chatService = new ChatService(repository);
+            Task consumerTask = new Task(async () =>
+            {
+                var consumerConfig = new ConsumerConfig
+                {
+                    BootstrapServers = "localhost:9092",
+                    GroupId = "bot.receiver.telegram",
+                    AutoOffsetReset = AutoOffsetReset.Earliest,
+                    AllowAutoCreateTopics = true
+                };
 
-            _chatService = chatService;
-            chatService.registerBot(this);
-            _logger.LogInformation("Scope inited");
-         
+                using (var consumer = new ConsumerBuilder<Ignore, string>(consumerConfig).Build())
+                {
+                    consumer.Subscribe("sendMessage");
 
-            _logger.LogInformation("Bot init");
+                    while (true)
+                    {
+                        var consumeResult = consumer.Consume(cancellationToken);
+                        ChatMessage chatMessage = JsonConvert.DeserializeObject<ChatMessage>(consumeResult.Message.Value);
+                        await SendMessageToChat(chatMessage.ChatId, chatMessage.Message);
+                    }
+
+                    consumer.Close();
+                }
+            });
+            consumerTask.Start();
             return Task.CompletedTask;
         }
 
@@ -87,12 +101,15 @@ namespace TelegramBot.Bot
                 return;
             if (update.Message.Type != MessageType.Text)
                 return;
-
+          
             var chatId = update.Message.Chat.Id;
 
             _logger.LogInformation($"Получено '{update.Message.Text}' в чате {chatId}.");
 
-            _chatService.processMessage(new Model.ChatMessage(chatId, update.Message.Text));
+
+            ChatMessage message = new ChatMessage("telegram", chatId, update.Message.Text);
+
+            await _producer.ProduceAsync("receiveMessage", new Message<Null, string> { Value = JsonConvert.SerializeObject(message) });
         }
 
 

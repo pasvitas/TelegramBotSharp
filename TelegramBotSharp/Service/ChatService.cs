@@ -25,11 +25,11 @@ namespace TelegramBotSharp.Service
                 List<CommandEntity> commands = _commandRepoistory.FindByTrigger(chatMessage.Message);
                 if (commands.Count == 0)
                 {
-                    _bot.SendMessageToChat(chatId: chatMessage.ChatId, "Неизвестная команда");
+                    _bot.SendMessageToChat(new ChatMessage(chatMessage.Source, chatMessage.ChatId, "Неизвестная команда"));
                 }
                 else
                 {
-                    _bot.SendMessageToChat(chatId: chatMessage.ChatId, commands[0].commandAnswer);
+                    _bot.SendMessageToChat(new ChatMessage(chatMessage.Source, chatMessage.ChatId, commands[0].commandAnswer));
                 }
             }
         }

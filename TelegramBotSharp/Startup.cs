@@ -36,7 +36,7 @@ namespace TelegramBotSharp
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<ICommandsRepository, CommandRepository>();
-            services.AddHostedService<TelegramBotBot>();
+            services.AddHostedService<BotConnector>();
             services.AddScoped<IChatService, ChatService>();
         }
 
